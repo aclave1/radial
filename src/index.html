@@ -15,7 +15,8 @@
             padding: 10px;
             font-size: 2em;
         }
-        img{
+
+        img {
             height: 100%;
             width: 100%;
         }
@@ -27,145 +28,53 @@ radial
 <button id="up">up</button>
 <button id="down">down</button>
 
-<div  class="circle">1
+<div class="circle">1
 </div>
-<div  class="circle">2
+<div class="circle">2
 </div>
-<div  class="circle">3
+<div class="circle">3
 </div>
-<div  class="circle">4
+<div class="circle">4
 </div>
-<div  class="circle">5
+<div class="circle">5
 </div>
-<div  class="circle">6
+<div class="circle">6
 </div>
-<div  class="circle">7
+<div class="circle">7
 </div>
-<div  class="circle">8
+<div class="circle">8
 </div>
-<div  class="circle">9
+<div class="circle">9
 </div>
-<div  class="circle">0
-</div>
-<div  class="circle">0
-</div>
-
-
-
 
 
 </body>
-
+<script src="Radial.js"></script>
 <script>
 
-    (function () {
-        var screenHeight = window.innerHeight;
-        var screenWidth = window.innerWidth;
 
-        var wheelX = screenWidth/2;
-        var wheelY = screenHeight/2;
+    var screenHeight = window.innerHeight;
+    var screenWidth = window.innerWidth;
 
-        var circles = document.getElementsByClassName('circle');
+    var wheelX = screenWidth / 2;
+    var wheelY = screenHeight / 2;
 
-        var upbtn = document.getElementById('up');
-        var downbtn = document.getElementById('down');
+    var circles = document.getElementsByClassName('circle');
 
+    var upbtn = document.getElementById('up');
+    var downbtn = document.getElementById('down');
 
-        var i = 0;
-        var accel = 0;
-        var mouseDown = 0;
-
-
-        var slowDown = function (delta) {
-
-            accel = delta ? accel - delta : accel - 0.05;
-
-
-            if(accel > 0){
-                requestAnimationFrame(slowDown);
-            }else{
-                mouseDown = 0;
-                accel = 0;
-            }
-        };
-
-        var rotate = function(els,direction,cb){
-            var numEls = els.length;
-
-            var rads = 2 * Math.PI;
-
-            var elDegrees = rads/numEls;
-
-            accel =  (accel  > .07) ? accel: accel  + .005 ;
-
-
-            i += direction > 0 ? direction + accel : direction - accel;
-
-
-            for(var k = 0;k<els.length;k++){
-                var _el = els[k];
-                var x = Math.cos(i + k * elDegrees) * 200 + wheelX;
-                var y = Math.sin(i + k * elDegrees) * 200 + wheelY;
-                setPos(_el, x, y);
-            }
-            if(cb) cb();
-            if (mouseDown === 1) {
-                window.requestAnimationFrame(function(){
-                    rotate(els,direction,cb);
-                });
-            }
-        };
-
-        setPos = function (el, left, top) {
-            el.style.top = top + 'px';
-            el.style.left = left + 'px';
-        };
-
-        upbtn.addEventListener('mousedown', function () {
-            mouseDown = 1;
-            window.requestAnimationFrame(function(){
-
-                //rotateForward(circles);
-                rotate(circles,0.02);
-
-            });
-        });
-
-        window.addEventListener('mouseup', function () {
-            requestAnimationFrame(function(){
-                slowDown(0.5);
-            });
-        });
-
-        downbtn.addEventListener('mousedown', function () {
-            mouseDown = 1;
-            window.requestAnimationFrame(function(){
-
-                //rotateForward(circles);
-                rotate(circles, -0.02);
-
-            });
-
-        });
-
-
-        window.addEventListener('mousewheel',function(e){
-            console.log('wheel');
-            window.requestAnimationFrame(function(){
-                mouseDown = 1;
-                rotate(circles,e.deltaY/1000,function(){
-                    slowDown(-0.000001);
-                });
-
-            });
-
-        });
-
-
-
-
-    })();
+Radial({
+    elements:circles,
+    upBtn:upbtn,
+    downBtn:downbtn,
+    x:wheelX,
+    y:wheelY
+});
 
 </script>
+
+
+
 
 </html>
