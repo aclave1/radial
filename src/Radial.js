@@ -45,6 +45,8 @@ window.Radial = (function () {
         mapDownBtn(elements, downBtn);
         mapWheel(elements);
         mapMouseUp();
+        //initial positioning
+        rotate(elements, 0);
 
 
 
