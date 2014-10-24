@@ -32,8 +32,8 @@ window.Radial = (function () {
                 radsPerEl = rads / elements.length,
                 rotateSpeed = (config.rotateSpeed !== undefined) ? Math.abs(config.rotateSpeed) : 0.02,
                 accel = config.accel || 0,
-                accelInc = config.accelInc ? Math.abs(config.accelInc) : 0.05,
-                accelDec = config.accelDec ? Math.abs(config.accelDec) : 0.005,
+                accelInc = config.accelInc ? Math.abs(config.accelInc) : 0.005,
+                accelDec = config.accelDec ? Math.abs(config.accelDec) : 0.01,
                 accelLim = config.accelLim ? Math.abs(config.accelLim) : 0.07,
                 rotationFactor = 0
                 ;
@@ -69,20 +69,24 @@ window.Radial = (function () {
 
         function mapMouseUp() {
             window.addEventListener('mouseup', function () {
-                window.requestAnimationFrame(function () {
-                    slowDown(0);
-                });
+                window.requestAnimationFrame(slowDown);
             });
         }
 
         function mapWheel(els) {
+            var wheel = true;
             window.addEventListener('mousewheel', function (e) {
+
+                /**
+                 * TODO: make sure the mouse is inside the wheel
+                 * */
+
                 window.requestAnimationFrame(function () {
                     mouseDown = 1;
-                    rotate(els, e.deltaY / 1000, function () {
-                        slowDown(0);
+                    rotate(els, e.deltaY / 600, function () {
+                        slowDown(accelDec/10000);
                     });
-                });
+                },wheel);
             });
         }
 
@@ -91,9 +95,10 @@ window.Radial = (function () {
             el.style.left = left + 'px';
         }
 
-        function rotate(els, direction, cb) {
+        function rotate(els, direction, cb,wheel) {
 
             accel = (accel > accelLim) ? accel : accel + accelInc;
+
             rotationFactor += direction > 0 ? direction + accel : direction - accel;
 
             for (var k = 0; k < els.length; k++) {
@@ -105,15 +110,15 @@ window.Radial = (function () {
                  * y = b + r cos t
                  * a,b = x/y of center of circle
                  * */
-                var x = Math.cos(rotationFactor + k * radsPerEl) * radius + wheelX;
-                var y = Math.sin(rotationFactor + k * radsPerEl) * radius + wheelY;
+                var x = Math.cos(rotationFactor + k * radsPerEl) * radius + centerX;
+                var y = Math.sin(rotationFactor + k * radsPerEl) * radius + centerY;
 
                 setPos(_el, x, y);
 
             }
 
             if (cb) {cb();}
-            if (mouseDown === 1) {
+            if (mouseDown === 1 || wheel) {
                 window.requestAnimationFrame(function () {
                     rotate(els, direction, cb);
                 });
@@ -121,9 +126,17 @@ window.Radial = (function () {
         }
 
         function slowDown(delta) {
-            accel = (delta !== undefined) ? accel - delta : accel - accelDec;
+            accel -= accelDec;
+
+            //var dt = (typeof delta === "undefined") ?   accel - accelDec : accel - delta ;
+            //console.log(delta);
+
+            //accel = (delta || delta === 0) ? accel - delta : accel - accelDec;
+
             if (accel > 0) {
-                window.requestAnimationFrame(slowDown);
+                window.requestAnimationFrame(function(){
+                    slowDown();
+                });
             } else {
                 mouseDown = 0;
                 accel = 0;
