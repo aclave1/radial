@@ -20,6 +20,12 @@
             height: 100%;
             width: 100%;
         }
+        .circle-wrapper{
+            border: 1px solid black;
+            height: 60px;
+            width: 60px;
+            position: absolute;
+        }
     </style>
 
 </head>
@@ -28,24 +34,17 @@ radial
 <button id="up">up</button>
 <button id="down">down</button>
 
-<div class="circle">1
-</div>
-<div class="circle">2
-</div>
-<div class="circle">3
-</div>
-<div class="circle">4
-</div>
-<div class="circle">5
-</div>
-<div class="circle">6
-</div>
-<div class="circle">7
-</div>
-<div class="circle">8
-</div>
-<div class="circle">9
-</div>
+
+<div class="circle 0">0</div>
+<div class="circle 1">1</div>
+<div class="circle 2">2</div>
+<div class="circle 3">3</div>
+<div class="circle 4">4</div>
+<div class="circle 5">5</div>
+<div class="circle 6">6</div>
+<div class="circle 7">7</div>
+<div class="circle 8">8</div>
+<div class="circle 9">9</div>
 
 
 </body>
@@ -69,7 +68,11 @@ Radial({
     upBtn:upbtn,
     downBtn:downbtn,
     x:wheelX,
-    y:wheelY
+    y:wheelY,
+    numElsToShow:4,
+    thresholdCross:function(el){
+        console.log("threshold crossed: "+el.firstChild.innerText);
+    }
 });
 
 </script>
