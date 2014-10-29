@@ -10,7 +10,9 @@ window.Radial = (function () {
 
     function Radial(config) {
 
-
+        /**
+         * Configuration constants
+         */
         var elements = config.elements,
             numElsToShow = config.numElsToShow || 8,
             upBtn = config.upBtn,
@@ -25,16 +27,15 @@ window.Radial = (function () {
             accelInc = config.accelInc ? Math.abs(config.accelInc) : 0.005,
             accelDec = config.accelDec ? Math.abs(config.accelDec) : 0.01,
             accelLim = config.accelLim ? Math.abs(config.accelLim) : 0.07,
-            rotationFactor = -Math.PI/2,
+            rotationFactor = -Math.PI / 2,
             threshold = config.threshold || 0,
-            thresholdCross = config.thresholdCross || function () {},
+            thresholdCross = config.thresholdCross || function () {
+            },
             feedElements = config.feedElements || true
             ;
 
         var mouseDown = 0;
 
-        //array to hold elements which are not currently being displayed
-        var elementStaging = [];
         var circleList;
 
         var elsToShow = buildDom(elements, numElsToShow);
@@ -44,8 +45,8 @@ window.Radial = (function () {
         mapDownBtn(elsToShow, downBtn);
         mapWheel(elsToShow);
         mapMouseUp();
-        //initial positioning
 
+        //initial positioning
         rotate(elsToShow, 0);
 
         /**
@@ -62,19 +63,19 @@ window.Radial = (function () {
                 throw new Error("Radial requires an HTMLCollection");
             }
 
-            elementStaging = createRadialElements(els);
-            circleList = createCircularList(elementStaging,max);
+            var elementStaging = createRadialElements(els);
+            circleList = createCircularList(elementStaging, max);
 
 
             var domEls = [];
 
             //remove excess elements from dom
-            for(var i=max;i<elementStaging.length;i++){
+            for (var i = max; i < elementStaging.length; i++) {
                 document.body.removeChild(elementStaging[i].node);
             }
 
 
-            for(var k=0;k<max;k++){
+            for (var k = 0; k < max; k++) {
                 var stage = elementStaging[k].node;
                 var wrapped = wrapNode(stage, 'div');
                 wrapped.className = stage.classList[0] + '-wrapper';
@@ -83,14 +84,17 @@ window.Radial = (function () {
             return domEls;
 
         }
+
         /***
          * @description Wraps an html node with another node of type provided,
          * appending the newly wrapped element to the old parent
          * @param type: the type of node to wrap node with, ie: 'div','p'...
          * @param node: a node in the html document
          * */
-        function wrapNode(node,type){
-            if(!(node instanceof HTMLElement)){throw new Error("Cannot wrap a non-html element");}
+        function wrapNode(node, type) {
+            if (!(node instanceof HTMLElement)) {
+                throw new Error("Cannot wrap a non-html element");
+            }
             type = (typeof type === 'string') ? type : 'div';
             var newParent = document.createElement(type);
             var oldParent = node.parentNode;
@@ -178,6 +182,10 @@ window.Radial = (function () {
          */
         function rotate(els, direction, cb) {
 
+            if (dontRotate(direction)) {
+                return;
+            }
+
             accel = (accel > accelLim) ? accel : accel + accelInc;
 
             var delta = direction > 0 ? direction + accel : direction - accel;
@@ -223,6 +231,21 @@ window.Radial = (function () {
                 window.requestAnimationFrame(function () {
                     rotate(els, direction, cb);
                 });
+            }
+        }
+
+        /**
+         * Used to prevent the radial from rotating if it's at either end of the list.
+         * @param direction the direction in which the rotation is trying to occur.
+         * @returns {boolean}
+         */
+        function dontRotate(direction) {
+            if (direction > 0 && circleList.atEndOfList()) {
+                return true;
+            } else if (direction < 0 && circleList.atBeginningOfList()) {
+                return true;
+            } else {
+                return false;
             }
         }
 
@@ -276,23 +299,33 @@ window.Radial = (function () {
          *        ^end
          */
 
-        function createCircularList(array,end){
+        function createCircularList(array, end) {
             var circlist = array;
             var beg = 0;
-            var last = end-1;
+            var last = end - 1;
 
             return {
-                getNext : function(){
-                    if(last === array.length-1){return circlist[last];}
+                getNext: function () {
+                    if (this.atEndOfList()) {
+                        return circlist[last];
+                    }
                     beg++;
                     last++;
                     return circlist[last];
                 },
-                getPrevious:function(){
-                    if(beg === 0){return circlist[beg];}
+                getPrevious: function () {
+                    if (this.atBeginningOfList()) {
+                        return circlist[beg];
+                    }
                     beg--;
                     last--;
                     return circlist[beg];
+                },
+                atBeginningOfList: function () {
+                    return beg === 0;
+                },
+                atEndOfList: function () {
+                    return last === array.length - 1;
                 }
             };
         }
@@ -313,7 +346,7 @@ window.Radial = (function () {
                 nextEl = circleList.getPrevious();
             }
 
-            if(el.firstChild !== nextEl){
+            if (el.firstChild !== nextEl) {
                 while (el.firstChild) {
                     el.removeChild(el.firstChild);
                 }
@@ -407,6 +440,7 @@ window.Radial = (function () {
                     }
                 }
             }
+
             copyattrs(clone, to);
         }
 
