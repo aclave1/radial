@@ -1,4 +1,4 @@
-(function (root,factory) {
+(function (root, factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         return define([], function () {
@@ -8,7 +8,7 @@
         root.Radial = factory();
     }
 
-})(this,function () {
+})(this, function () {
     'use strict';
 
     function Radial(config) {
@@ -21,8 +21,8 @@
             upBtn = config.upBtn,
             downBtn = config.downBtn,
             radius = config.radius || 200,
-            centerX = config.x,
-            centerY = config.y,
+            centerX = config.x || window.innerWidth / 2,
+            centerY = config.y || window.innerHeight / 2,
             rads = 2 * Math.PI,
             radsPerEl = rads / numElsToShow,
             rotateSpeed = (config.rotateSpeed !== undefined) ? Math.abs(config.rotateSpeed) : 0.02,
@@ -43,9 +43,14 @@
 
         var elsToShow = buildDom(elements, numElsToShow);
 
+        if (upBtn) {
+            mapUpBtn(elsToShow, upBtn);
+        }
+        if (downBtn) {
+            mapDownBtn(elsToShow, downBtn);
+        }
 
-        mapUpBtn(elsToShow, upBtn);
-        mapDownBtn(elsToShow, downBtn);
+
         mapWheel(elsToShow);
         mapMouseUp();
 
@@ -62,9 +67,6 @@
          * @returns {Array} array of elements which will be shown in the dom.
          */
         function buildDom(els, max) {
-            if (!(els instanceof HTMLCollection)) {
-                throw new Error("Radial requires an HTMLCollection");
-            }
 
             var elementStaging = createRadialElements(els);
             circleList = createCircularList(elementStaging, max);
@@ -74,7 +76,9 @@
 
             //remove excess elements from dom
             for (var i = max; i < elementStaging.length; i++) {
-                document.body.removeChild(elementStaging[i].node);
+                if (elementStaging[i].node.parentNode !== null) {
+                    document.body.removeChild(elementStaging[i].node);
+                }
             }
 
 
@@ -101,10 +105,24 @@
             type = (typeof type === 'string') ? type : 'div';
             var newParent = document.createElement(type);
             var oldParent = node.parentNode;
-            document.body.removeChild(node);
+            safeRemove(document.body, node);
             newParent.appendChild(node);
-            oldParent.appendChild(newParent);
+            safeAppend(oldParent, newParent);
             return newParent;
+        }
+
+        function safeRemove(parent, child) {
+            if (child.parentNode !== null) {
+                parent.removeChild(child);
+            }
+        }
+
+        function safeAppend(parent, child) {
+            if (parent !== null) {
+                parent.appendChild(child);
+            } else {
+                document.body.appendChild(child);
+            }
         }
 
         /**
