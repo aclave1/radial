@@ -1,12 +1,15 @@
-'use strict';
+(function (root,factory) {
+    'use strict';
+    if (typeof define === 'function' && define.amd) {
+        return define([], function () {
+            return factory();
+        });
+    } else {
+        root.Radial = factory();
+    }
 
-/**
- * Forgive me father for I have sinned, I have made a global variable...
- * only for a day
- * */
-
-window.Radial = (function () {
-
+})(this,function () {
+    'use strict';
 
     function Radial(config) {
 
@@ -414,39 +417,14 @@ window.Radial = (function () {
          * A wrapper for an HTMLNode
          * data:{
          *  node:the html node,
-         *  index: the position in radial's array of elements to show and hide(used to feed elements in and out)
          * }
          * */
         function RadialElement(data) {
             this.node = data.node;
         }
 
-        /**
-         * copies attributes of
-         * @param from object which attributes are copied from
-         * @param to object which attributes are copied to
-         *
-         * */
-        function copy(from, to) {
-            var clone = JSON.parse(JSON.stringify(from));
-
-            function copyattrs(from, to) {
-                for (var k in from) {
-                    if (from.hasOwnProperty(k)) {
-                        if (typeof from[k] === "object") {
-                            copyattrs(from[k], to[k]);
-                        }
-                        to[k] = from[k];
-                    }
-                }
-            }
-
-            copyattrs(clone, to);
-        }
-
-
     }
 
 
     return Radial;
-})();
+});
