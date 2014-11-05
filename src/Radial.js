@@ -16,7 +16,7 @@
         /**
          * Configuration constants
          */
-        var elements = config.elements,
+        var elements = getElements(config),
             numElsToShow = config.numElsToShow || 8,
             upBtn = config.upBtn,
             downBtn = config.downBtn,
@@ -36,6 +36,8 @@
             },
             feedElements = config.feedElements || true
             ;
+
+
 
         var mouseDown = 0;
 
@@ -77,7 +79,7 @@
             //remove excess elements from dom
             for (var i = max; i < elementStaging.length; i++) {
                 if (elementStaging[i].node.parentNode !== null) {
-                    document.body.removeChild(elementStaging[i].node);
+                    safeRemove(elementStaging[i].node);
                 }
             }
 
@@ -105,14 +107,15 @@
             type = (typeof type === 'string') ? type : 'div';
             var newParent = document.createElement(type);
             var oldParent = node.parentNode;
-            safeRemove(document.body, node);
+            safeRemove(node);
             newParent.appendChild(node);
             safeAppend(oldParent, newParent);
             return newParent;
         }
 
-        function safeRemove(parent, child) {
-            if (child.parentNode !== null) {
+        function safeRemove(child) {
+            var parent = child.parentNode;
+            if (parent.contains(child)) {
                 parent.removeChild(child);
             }
         }
@@ -439,6 +442,21 @@
          * */
         function RadialElement(data) {
             this.node = data.node;
+        }
+
+        /**
+         * Returns the config.elements html collection.
+         * If this does not exist, it tries to retrieve the elements via config.className.
+         * if classname is undefined and config.elements is undefined, throws an error
+         */
+        function getElements(config){
+            if(config.elements && config.elements.length){
+                return config.elements;
+            }else if(config.className){
+                return document.getElementsByClassName(config.className);
+            }else{
+                throw new Error("Radial needs either a collection of elements or a classname.");
+            }
         }
 
     }

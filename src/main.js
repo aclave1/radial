@@ -9,7 +9,7 @@ require.config({
         ]
     }
 });
-require(['angular','Radial','directive'], function (angular,Radial) {
+require(['angular','Radial','adapters/directive'], function (angular,Radial) {
 
     angular.module('app',['radial']).controller('AppCtrl',['$scope',function($scope){
 
