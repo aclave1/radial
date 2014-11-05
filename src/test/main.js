@@ -1,6 +1,7 @@
 require.config({
     paths:{
-        'angular':'angular'
+        'angular':'angular',
+        'radial':'../radial'
     },
     shim: {
         angular: {exports: 'angular'},
@@ -9,8 +10,8 @@ require.config({
         ]
     }
 });
-require(['angular','Radial','adapters/directive'], function (angular,Radial) {
-
+require(['angular','radial','../adapters/directive'], function (angular,Radial) {
+    'use strict';
     angular.module('app',['radial']).controller('AppCtrl',['$scope',function($scope){
 
 

@@ -97,8 +97,8 @@
         /***
          * @description Wraps an html node with another node of type provided,
          * appending the newly wrapped element to the old parent
-         * @param type: the type of node to wrap node with, ie: 'div','p'...
          * @param node: a node in the html document
+         * @param type: the type of node to wrap node with, ie: 'div','p'...
          * */
         function wrapNode(node, type) {
             if (!(node instanceof HTMLElement)) {
@@ -448,6 +448,7 @@
          * Returns the config.elements html collection.
          * If this does not exist, it tries to retrieve the elements via config.className.
          * if classname is undefined and config.elements is undefined, throws an error
+         * @param config config function originally passed to Radial()
          */
         function getElements(config){
             if(config.elements && config.elements.length){

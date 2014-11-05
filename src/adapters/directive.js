@@ -1,4 +1,4 @@
-define(['../angular', 'Radial'], function (angular, Radial) {
+define(['angular', 'radial'], function (angular, Radial) {
 
     angular
         .module('radial', [])
