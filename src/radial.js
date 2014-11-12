@@ -25,9 +25,9 @@
             centerY = config.y || window.innerHeight / 2,
             rads = 2 * Math.PI,
             radsPerEl = rads / numElsToShow,
-            rotateSpeed = (config.rotateSpeed !== undefined) ? Math.abs(config.rotateSpeed) : 0.02,
+            rotateSpeed = (config.rotateSpeed !== undefined) ? Math.abs(config.rotateSpeed) : 0.01,
             accel = config.accel || 0,
-            accelInc = config.accelInc ? Math.abs(config.accelInc) : 0.005,
+            accelInc = config.accelInc ? Math.abs(config.accelInc) : 0.002,
             accelDec = config.accelDec ? Math.abs(config.accelDec) : 0.01,
             accelLim = config.accelLim ? Math.abs(config.accelLim) : 0.07,
             rotationFactor = -Math.PI / 2,
@@ -121,6 +121,7 @@
         }
 
         function safeAppend(parent, child) {
+            //parent could have been deleted by the time this gets called
             if (parent !== null) {
                 parent.appendChild(child);
             } else {
